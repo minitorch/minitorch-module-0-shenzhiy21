@@ -56,15 +56,23 @@ class Module:
         # TODO: Implement for Task 0.4.
         # raise NotImplementedError("Need to implement for Task 0.4")
         p: Dict[str, Parameter] = self.__dict__["_parameters"]
-        ret: List[Tuple[str, Parameter]] = list(tuple(p))
-        for child_module in self.modules():
-            ret.extend(child_module.named_parameters())
-        return ret        
+        named_params: List[Tuple[str, Parameter]] = list(p.items())
+        for child_module_name, child_module in list(self.__dict__["_modules"].items()):
+            child_named_params = child_module.named_parameters()
+            for name, param in child_named_params:
+                full_name = child_module_name + '.' + name
+                named_params.append((full_name, param))
+        return named_params
 
     def parameters(self) -> Sequence[Parameter]:
         "Enumerate over all the parameters of this module and its descendents."
         # TODO: Implement for Task 0.4.
-        raise NotImplementedError("Need to implement for Task 0.4")
+        # raise NotImplementedError("Need to implement for Task 0.4")
+        named_params = self.named_parameters()
+        params = []
+        for named_param in named_params:
+            params.append(named_param[1])
+        return params
 
     def add_parameter(self, k: str, v: Any) -> Parameter:
         """
